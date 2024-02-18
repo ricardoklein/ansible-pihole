@@ -7,7 +7,10 @@ Requirements
 ------------
 
 Ansible
-Podman
+Podman (will be installe dy the role)
+
+Recommended to setup a firewall and not expose your firewall (ports 80/tcp) and 53/udp.
+You can use my role ricardoklein.nftables to setup the firewall ;-)
 
 Role Variables
 --------------
@@ -28,7 +31,7 @@ Including an example of how to use your role (for instance, with variables passe
 
     - hosts: servers
       roles:
-         - { role: username.rolename, x: 42 }
+         - { role: ricardoklein.pihole }
 
 License
 -------
