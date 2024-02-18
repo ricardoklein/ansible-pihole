@@ -1,0 +1,77 @@
+---
+# Make sure Podman is installed
+- name: PIHOLE | Install podman package
+  tags:
+    - packages
+  ansible.builtin.import_tasks: tasks/sles.yml
+  when: (ansible_os_family == 'Suse' or ansible_os_family == 'openSUSE MicroOS')
+  become: yes
+
+# Deploy pi-hole container
+- name: PIHOLE | Deploy container
+  tags:
+    - containers
+    - pihole
+  block:
+    - name: PIHOLE | Create dirs
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        mode: "{{ item.mode }}"
+        state: "directory"
+        recurse: no
+      loop:
+        - "{{ pihole_dnsmasq_dir }}"
+        - "{{ pihole_etc_dir }}"
+    - name: PIHOLE | Setup image
+      containers.podman.podman_container:
+        image: docker.io/pihole/pihole
+        name: pihole
+        state: present
+        network: host
+        publish: "{{ pihole_ports }}"
+        env:
+          WEBPASSWORD: "{{ pihole_webpassword }}"
+          SERVERIP: "{{ pihole_ip }}"
+          TZ: "{{ pihole_tz }}"
+        volumes:
+          - "{{ pihole_dnsmasq_dir.path }}:/etc/dnsmasq.d"
+          - "{{ pihole_etc_dir.path }}:/etc/pihole"
+    - name: PIHOLE | Systemd
+      containers.podman.podman_generate_systemd:
+        name: pihole
+        dest: /etc/systemd/system
+    - name: PIHOLE | Enable on boot
+      ansible.builtin.systemd:
+        name: container-pihole.service
+        daemon_reload: yes
+        enabled: yes
+        state: started
+
+    # Deploy pi-hole systemd timers (aka hypster crontab jobs)
+    - name: PIHOLE | Systemd timers
+      block:
+      - name: PIHOLE | Deploy pihole maintenance systemd service
+        ansible.builtin.template:
+          src:   "pihole-maintenance-tasks.service.j2"
+          dest:  "{{ systemd_base_path }}/pihole-maintenance-tasks.service"
+          owner: root
+          group: root
+          mode:  '0755'
+      - name: PIHOLE | Deploy maintenance systemd timer
+        ansible.builtin.template:
+          src:   "pihole-maintenance-tasks.timer.j2"
+          dest:  "{{ systemd_base_path }}/pihole-maintenance-tasks.timer"
+          owner: root
+          group: root
+          mode:  '0755'
+      - name: PIHOLE | Enable systemd services
+        ansible.builtin.systemd:
+          name: "pihole-maintenance-tasks.service"
+          daemon_reload: yes
+          enabled: yes
+      - name: PIHOLE | Enable systemd timers
+        ansible.builtin.systemd:
+          name: "pihole-maintenance-tasks.timer"
+          daemon_reload: yes
+          enabled: yes
+          state: started

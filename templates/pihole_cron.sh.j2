@@ -1,0 +1,22 @@
+#!/bin/bash
+
+systemctl stop pihole
+
+podman kill $(sudo podman ps | grep pihole | cut -f1 -d' ')
+
+podman system prune -f
+
+podman rmi pihole
+
+sudo podman run -d \
+    --name={{ pihole_container_name }} \
+    -e TZ={{ pihole_tz }} \
+    -e WEBPASSWORD={{ pihole_webpassword }} \
+    -e SERVERIP={{ pihole_ip }} \
+    -v {{ pihole_etc_dir}}:/etc/pihole \
+    -v {{ pihole_dnsmasq_dir }}:/etc/dnsmasq.d \
+    {{% for port in pihole_ports %}}
+    -p {{ port }} \
+    {{% endfor %}}
+    --restart=unless-stopped \
+    docker.io/pihole/pihole

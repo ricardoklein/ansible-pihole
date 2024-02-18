@@ -1,0 +1,11 @@
+[Unit] 
+Description=Runs the maintenance tasks for pihole
+
+[Timer] 
+Unit=pihole-maintenance-tasks.service 
+{% for timer in pihole_maintenance_schedule %}
+{{ timer }}
+{% endfor %}
+
+[Install] 
+WantedBy=timers.target

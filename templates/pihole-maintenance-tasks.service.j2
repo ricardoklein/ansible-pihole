@@ -1,0 +1,11 @@
+[Unit] 
+Description=Run pihole -g (maintenance tasks)
+
+[Service] 
+Type=oneshot
+ExecStart=/bin/bash -c 'podman exec -i pihole pihole -g'
+ExecStartPost=/bin/bash -c 'echo $(date)'
+TimeoutStopSec= 3 
+
+[Install] 
+WantedBy= multi-user.target

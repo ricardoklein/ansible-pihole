@@ -1,0 +1,6 @@
+---
+- name: PIHOLE | Install podman package
+  community.general.zypper:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ podman_packages }}"

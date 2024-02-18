@@ -1,0 +1,20 @@
+---
+galaxy_info:
+  role_name: pihole
+  author: Ricardo Klein
+  description: Setup pihole using Podman on your host
+  company: N/A
+  license: GPL-2.0-or-later
+  min_ansible_version: "2.15"
+  platforms:
+    - name: opensuse
+      versions:
+        - "15.5"
+    - name: SLES
+      versions:
+        - "15"
+  galaxy_tags:
+    - pihole
+    - podman
+    - dns
+dependencies: []
