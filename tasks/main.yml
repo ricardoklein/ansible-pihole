@@ -40,6 +40,7 @@
       containers.podman.podman_generate_systemd:
         name: pihole
         dest: /etc/systemd/system
+        stop_timeout: 2
     - name: PIHOLE | Enable on boot
       ansible.builtin.systemd:
         name: container-pihole.service
