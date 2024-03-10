@@ -27,7 +27,7 @@
         image: docker.io/pihole/pihole
         name: pihole
         state: present
-        network: host
+        network: slirp4netns
         publish: "{{ pihole_ports }}"
         env:
           WEBPASSWORD: "{{ pihole_webpassword }}"

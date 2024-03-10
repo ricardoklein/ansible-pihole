@@ -16,8 +16,8 @@ pihole_ip: "192.168.101.175"
 pihole_webpassword: "supersecretpassword"
 pihole_tz: "Europe/Berlin"
 pihole_ports:
-  - 8080:80
-  - 53:53/udp
+  - "8080:80"
+  - "53:53/udp"
 pihole_maintenance_schedule:
   - "OnCalendar=Mon..Fri 9:00"
   - "OnCalendar=Sat,Sun 20:00"
