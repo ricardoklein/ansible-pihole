@@ -36,11 +36,13 @@
         volumes:
           - "{{ pihole_dnsmasq_dir.path }}:/etc/dnsmasq.d"
           - "{{ pihole_etc_dir.path }}:/etc/pihole"
-    - name: PIHOLE | Systemd
-      containers.podman.podman_generate_systemd:
-        name: pihole
-        dest: /etc/systemd/system
-        stop_timeout: 5
+    - name: PIHOLE | Deploy systemd Unit
+      ansible.builtin.template:
+        src:   "container-pihole.service.j2"
+        dest:  "{{ systemd_base_path }}/container-pihole.service"
+        owner: root
+        group: root
+        mode:  '0755'
     - name: PIHOLE | Enable on boot
       ansible.builtin.systemd:
         name: container-pihole.service

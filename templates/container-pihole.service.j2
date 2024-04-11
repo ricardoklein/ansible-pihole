@@ -1,0 +1,13 @@
+# MANAGED BY ANSIBLE
+[Unit]
+Description=Podman container-pihole.service
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=/run/containers/storage
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/podman start -a pihole
+ExecStop=/usr/bin/podman stop -t 10 pihole
+[Install]
+WantedBy=default.target
